@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import {
   ArrowRight,
   Award,
@@ -21,7 +21,8 @@ import {
   Wrench,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 
 import atendimentoAntigaWebp from "@/assets/atendimento-antiga.webp.asset.json";
 import estoqueAntigaWebp from "@/assets/estoque-antiga.webp.asset.json";
@@ -33,11 +34,19 @@ import trocaDeOleoWebp from "@/assets/troca-de-oleo.webp.asset.json";
 import { Button } from "@/components/ui/button";
 
 const WHATSAPP_NUMBER = "+5517992822597";
-const WHATSAPP_BASE_MESSAGE =
-  "Olá! Gostaria de solicitar um orçamento de peças para o meu veículo.";
+const WHATSAPP_BASE_MESSAGE = "Olá! Gostaria de solicitar um orçamento de peças para o meu veículo.";
 const GOOGLE_MAPS_DIRECTIONS =
   "https://www.google.com/maps/dir/?api=1&destination=Av.+Potirendaba,+2110+-+Jardim+Santa+Luzia,+S%C3%A3o+Jos%C3%A9+do+Rio+Preto+-+SP,+15080-000";
 const GOOGLE_REVIEWS = "https://g.page/r/CXUhLbpwFHRsEBM/review";
+const MDS_URL = "https://mundodigitalsolucoes.com.br";
+
+const menuItems = [
+  ["Home", "#home"],
+  ["Empresa", "#empresa"],
+  ["Serviços", "#servicos"],
+  ["Troca de Óleo", "#troca-de-oleo"],
+  ["Contato", "#contato"],
+] as const;
 
 type QuoteFormState = {
   brand: string;
@@ -61,7 +70,7 @@ const diferencials = [
   "Troca de óleo",
   "Orçamento rápido pelo WhatsApp",
   "38 anos de tradição",
-  "Loja física",
+  "Melhores preços do mercado",
   "Produtos das melhores marcas",
   "Agilidade para encontrar a peça certa",
 ] as const;
@@ -117,38 +126,32 @@ const brands = [
   "COFAP",
 ] as const;
 
-const timeline = [
-  { year: "1988", title: "Fundação", description: "Início da trajetória da PeçAqui atendendo motoristas e oficinas de Rio Preto." },
-  { year: "2000", title: "Ampliação", description: "Expansão da operação e aumento da variedade de autopeças e acessórios." },
-  { year: "2010", title: "Modernização", description: "Evolução do atendimento, da estrutura e do mix de marcas automotivas." },
-  { year: "2026", title: "38 anos", description: "Tradição, confiança e presença consolidada em São José do Rio Preto." },
-] as const;
-
 const testimonials = [
   {
-    name: "Motoristas e oficinas da região",
-    text: "Quem procura peça com atendimento de verdade encontra uma equipe pronta para orientar e agilizar o orçamento.",
+    name: "Antonio Carlos Ruiz",
+    text: "Sempre atendendo a gente com muita atenção e presteza, procurando solucionar o nosso problema. Pessoal super bacana e simpático. Super recomendo.",
   },
   {
-    name: "Clientes de troca de óleo",
-    text: "A estrutura une lubrificantes de qualidade, processo rápido e confiança para voltar sempre.",
+    name: "Herbert John",
+    text: "Ótimo atendimento, sempre preço em conta e tem bastante variedade de peças.",
   },
   {
-    name: "Compradores recorrentes",
-    text: "A tradição da loja passa segurança: variedade, marcas reconhecidas e uma equipe que conhece o mercado local.",
+    name: "Guilherme Dellazari",
+    text: "Muito fácil acesso, ótimo atendimento e muito rápido.",
   },
+] as const;
+
+const historyImages = [
+  { src: fachadaAbertaAntigaWebp.url, alt: "Foto antiga da fachada da PeçAqui Auto Peças" },
+  { src: atendimentoAntigaWebp.url, alt: "Foto antiga do atendimento da PeçAqui Auto Peças" },
+  { src: estoqueAntigaWebp.url, alt: "Foto antiga do estoque da PeçAqui Auto Peças" },
 ] as const;
 
 const galleryImages = [
-  { src: heroFachadaWebp.url, alt: "Fachada principal da PeçAqui Auto Peças em São José do Rio Preto", category: "Fachada" },
-  { src: fotoInternaWebp.url, alt: "Ambiente interno da loja com lubrificantes, atendimento e peças automotivas", category: "Loja" },
-  { src: trocaDeOleoWebp.url, alt: "Serviço real de troca de óleo na PeçAqui Auto Peças", category: "Troca de óleo" },
-  { src: atendimentoAntigaWebp.url, alt: "Foto histórica do atendimento da PeçAqui Auto Peças", category: "Atendimento" },
-  { src: estoqueAntigaWebp.url, alt: "Foto histórica do estoque de autopeças da PeçAqui", category: "Estoque" },
-  { src: fachadaAbertaAntigaWebp.url, alt: "Foto histórica da fachada da PeçAqui Auto Peças", category: "Fachada" },
+  { src: heroFachadaWebp.url, alt: "Fachada atual da PeçAqui Auto Peças em São José do Rio Preto" },
+  { src: fotoInternaWebp.url, alt: "Ambiente interno atual da PeçAqui Auto Peças" },
+  { src: trocaDeOleoWebp.url, alt: "Serviço atual de troca de óleo na PeçAqui Auto Peças" },
 ] as const;
-
-const categoryFilters = ["Todos", "Fachada", "Atendimento", "Estoque", "Troca de óleo", "Loja"] as const;
 
 const businessSchema = {
   "@context": "https://schema.org",
@@ -161,13 +164,8 @@ const businessSchema = {
       url: "/",
       telephone: "+55 17 3227-8323",
       priceRange: "$$",
-      description:
-        "Autopeças, acessórios, lubrificantes e troca de óleo com atendimento especializado em São José do Rio Preto.",
-      sameAs: [
-        "https://www.instagram.com/auto.pecas.pecaqui/",
-        "https://www.facebook.com/autopecas.pecaqui",
-        GOOGLE_REVIEWS,
-      ],
+      description: "Autopeças, acessórios, lubrificantes e troca de óleo com atendimento especializado em São José do Rio Preto.",
+      sameAs: ["https://www.instagram.com/auto.pecas.pecaqui/", "https://www.facebook.com/autopecas.pecaqui", GOOGLE_REVIEWS],
       address: {
         "@type": "PostalAddress",
         streetAddress: "Av. Potirendaba, 2110 - Jardim Santa Luzia",
@@ -226,17 +224,13 @@ export const Route = createFileRoute("/")({
       },
       {
         property: "og:description",
-        content:
-          "Há 38 anos oferecendo autopeças, acessórios, lubrificantes e troca de óleo com atendimento especializado em São José do Rio Preto.",
+        content: "Há 38 anos oferecendo autopeças, acessórios, lubrificantes e troca de óleo com atendimento especializado em São José do Rio Preto.",
       },
       { property: "og:url", content: "/" },
       { property: "og:image", content: heroFachadaWebp.url },
       { name: "twitter:image", content: heroFachadaWebp.url },
     ],
-    links: [
-      { rel: "canonical", href: "/" },
-      { rel: "preload", as: "image", href: heroFachadaWebp.url, fetchPriority: "high" },
-    ],
+    links: [{ rel: "canonical", href: "/" }, { rel: "preload", as: "image", href: heroFachadaWebp.url, fetchPriority: "high" }],
     scripts: [
       {
         type: "application/ld+json",
@@ -251,7 +245,7 @@ function Index() {
   const reduceMotion = useReducedMotion();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [headerSolid, setHeaderSolid] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<(typeof categoryFilters)[number]>("Todos");
+  const [carouselIndex, setCarouselIndex] = useState(0);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [formState, setFormState] = useState<QuoteFormState>({ brand: "", model: "", year: "", part: "" });
 
@@ -261,11 +255,6 @@ function Index() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  const filteredGallery = useMemo(() => {
-    if (selectedCategory === "Todos") return galleryImages;
-    return galleryImages.filter((image) => image.category === selectedCategory);
-  }, [selectedCategory]);
 
   const quoteHref = buildQuoteLink(formState);
   const floatingWhatsAppHref = `https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, "")}?text=${encodeURIComponent(WHATSAPP_BASE_MESSAGE)}`;
@@ -277,23 +266,22 @@ function Index() {
     transition: { duration: 0.3, ease: "easeOut" as const },
   };
 
+  const goToGalleryImage = (direction: 1 | -1) => {
+    setCarouselIndex((current) => (current + direction + galleryImages.length) % galleryImages.length);
+  };
+
   return (
     <div className="bg-background text-foreground">
       <SiteHeader mobileMenuOpen={mobileMenuOpen} onToggleMenu={() => setMobileMenuOpen((open) => !open)} solid={headerSolid} />
 
       <main>
         <section id="home" className="relative isolate overflow-hidden bg-brand-graphite text-white">
-          <img
-            src={heroFachadaWebp.url}
-            alt="Fachada da PeçAqui Auto Peças"
-            className="absolute inset-0 h-full w-full object-cover"
-            fetchPriority="high"
-          />
+          <img src={heroFachadaWebp.url} alt="Fachada da PeçAqui Auto Peças" className="absolute inset-0 h-full w-full object-cover" fetchPriority="high" />
           <div className="absolute inset-0 bg-hero-overlay" />
           <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-brand-graphite/75 to-transparent" />
 
           <div className="section-shell relative pt-28 pb-14 md:pt-36 md:pb-24">
-            <div className="content-shell grid items-end gap-10 lg:grid-cols-[minmax(0,1.2fr)_24rem] lg:gap-12">
+            <div className="content-shell grid items-center gap-10 lg:grid-cols-[minmax(0,1.2fr)_24rem] lg:gap-12">
               <motion.div {...fadeUp} className="max-w-3xl space-y-7">
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-white/90 backdrop-blur-sm">
                   <ShieldCheck className="size-4 shrink-0" />
@@ -302,7 +290,7 @@ function Index() {
 
                 <div className="space-y-4">
                   <h1 className="max-w-4xl text-balance text-4xl font-extrabold leading-tight md:text-6xl md:leading-[1.02]">
-                    A peça certa para o seu carro.
+                    Precisou de peças para seu carro? PEÇAQUI.
                   </h1>
                   <p className="max-w-3xl text-balance text-lg leading-8 text-white/88 md:text-xl">
                     Há 38 anos conquistando a confiança dos motoristas de São José do Rio Preto.
@@ -330,33 +318,20 @@ function Index() {
 
               <motion.aside
                 {...fadeUp}
-                transition={{ duration: 0.3, delay: reduceMotion ? 0 : 0.08, ease: "easeOut" }}
-                className="metallic-badge rounded-2xl p-6 text-metal-foreground"
+                animate={reduceMotion ? undefined : { y: [0, -10, 0] }}
+                transition={reduceMotion ? { duration: 0.3, ease: "easeOut" } : { duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
+                className="relative mx-auto flex h-80 w-full max-w-[20rem] items-center justify-center overflow-hidden rounded-[2rem] border border-white/35 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(180,190,205,0.55)_45%,rgba(255,255,255,0.82))] p-6 text-center text-brand-graphite shadow-[0_28px_80px_-36px_rgba(15,23,42,0.8)] backdrop-blur-md [clip-path:polygon(50%_0%,88%_12%,100%_42%,86%_86%,50%_100%,14%_86%,0%_42%,12%_12%)]"
               >
-                <div className="mb-6 inline-flex rounded-full border border-white/25 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-white/75">
-                  Selo premium
-                </div>
-                <div className="space-y-5">
-                  <div className="space-y-1">
-                    <div className="text-6xl font-extrabold leading-none">38</div>
-                    <div className="text-sm font-semibold uppercase tracking-[0.14em] text-white/72">Anos</div>
-                    <div className="text-lg font-semibold uppercase tracking-[0.16em] text-white">de confiança</div>
+                <div className="absolute inset-3 rounded-[1.6rem] border border-white/60 [clip-path:polygon(50%_0%,88%_12%,100%_42%,86%_86%,50%_100%,14%_86%,0%_42%,12%_12%)]" />
+                <div className="absolute -left-16 top-0 h-full w-24 rotate-12 bg-white/35 blur-md" />
+                <div className="absolute inset-x-10 top-8 h-px bg-white/80" />
+                <div className="relative z-10 space-y-2 drop-shadow-sm">
+                  <div className="text-7xl font-black leading-none tracking-[-0.06em]">38</div>
+                  <div className="text-2xl font-extrabold uppercase tracking-[0.18em] text-brand-blue">Anos</div>
+                  <div className="mx-auto mt-3 h-px w-28 bg-brand-red/70" />
+                  <div className="pt-2 text-base font-black uppercase tracking-[0.18em] text-brand-graphite">
+                    de confiança
                   </div>
-
-                  <ul className="space-y-3 text-sm leading-6 text-white/88">
-                    {[
-                      "38 anos de mercado",
-                      "Grande variedade de peças",
-                      "Atendimento especializado",
-                      "Troca de óleo",
-                      "Loja física em São José do Rio Preto",
-                    ].map((item) => (
-                      <li key={item} className="flex items-start gap-3">
-                        <Check className="mt-1 size-4 shrink-0 text-white" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
               </motion.aside>
             </div>
@@ -382,13 +357,11 @@ function Index() {
         <motion.section id="orcamento" {...fadeUp} className="section-shell py-18 md:py-24">
           <div className="content-shell grid gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-start">
             <div className="space-y-5">
-              <span className="inline-flex rounded-full bg-secondary px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-primary">
-                Orçamento rápido
-              </span>
+              <span className="inline-flex rounded-full bg-secondary px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-primary">Orçamento rápido</span>
               <div className="space-y-4">
                 <h2 className="text-balance text-3xl font-extrabold md:text-5xl">Encontre sua peça em poucos minutos</h2>
                 <p className="max-w-xl text-base leading-8 text-muted-foreground md:text-lg">
-                  Informe os dados do veículo e a peça desejada. Sua mensagem já sai pronta no WhatsApp para agilizar o atendimento da equipe.
+                  Preencha os dados do seu veículo e coloque a peça desejada, que nossa equipe retorna com orçamento.
                 </p>
               </div>
               <div className="rounded-2xl border border-border bg-secondary/45 p-5">
@@ -410,36 +383,16 @@ function Index() {
             >
               <div className="grid gap-5 sm:grid-cols-2">
                 <FormField label="Marca do veículo">
-                  <input
-                    value={formState.brand}
-                    onChange={(event) => setFormState((state) => ({ ...state, brand: event.target.value }))}
-                    placeholder="Ex.: Volkswagen"
-                    className="h-12 w-full rounded-md border border-input bg-background px-4 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-ring"
-                  />
+                  <input value={formState.brand} onChange={(event) => setFormState((state) => ({ ...state, brand: event.target.value }))} placeholder="Ex.: Volkswagen" className="h-12 w-full rounded-md border border-input bg-background px-4 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-ring" />
                 </FormField>
                 <FormField label="Modelo">
-                  <input
-                    value={formState.model}
-                    onChange={(event) => setFormState((state) => ({ ...state, model: event.target.value }))}
-                    placeholder="Ex.: Gol 1.6"
-                    className="h-12 w-full rounded-md border border-input bg-background px-4 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-ring"
-                  />
+                  <input value={formState.model} onChange={(event) => setFormState((state) => ({ ...state, model: event.target.value }))} placeholder="Ex.: Gol 1.6" className="h-12 w-full rounded-md border border-input bg-background px-4 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-ring" />
                 </FormField>
                 <FormField label="Ano">
-                  <input
-                    value={formState.year}
-                    onChange={(event) => setFormState((state) => ({ ...state, year: event.target.value }))}
-                    placeholder="Ex.: 2018"
-                    className="h-12 w-full rounded-md border border-input bg-background px-4 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-ring"
-                  />
+                  <input value={formState.year} onChange={(event) => setFormState((state) => ({ ...state, year: event.target.value }))} placeholder="Ex.: 2018" className="h-12 w-full rounded-md border border-input bg-background px-4 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-ring" />
                 </FormField>
                 <FormField label="Peça desejada">
-                  <input
-                    value={formState.part}
-                    onChange={(event) => setFormState((state) => ({ ...state, part: event.target.value }))}
-                    placeholder="Ex.: pastilha de freio dianteira"
-                    className="h-12 w-full rounded-md border border-input bg-background px-4 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-ring"
-                  />
+                  <input value={formState.part} onChange={(event) => setFormState((state) => ({ ...state, part: event.target.value }))} placeholder="Ex.: pastilha de freio dianteira" className="h-12 w-full rounded-md border border-input bg-background px-4 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-ring" />
                 </FormField>
               </div>
 
@@ -453,19 +406,10 @@ function Index() {
 
         <motion.section id="empresa" {...fadeUp} className="section-shell bg-surface-alt py-18 md:py-24">
           <div className="content-shell space-y-10">
-            <SectionHeading
-              eyebrow="Diferenciais"
-              title="Por que escolher a PeçAqui?"
-              description="Uma operação desenhada para transmitir confiança, ganhar tempo no atendimento e resolver com precisão a necessidade de cada motorista ou oficina."
-            />
+            <SectionHeading eyebrow="Diferenciais" title="Por que escolher a PeçAqui?" description="Uma operação desenhada para transmitir confiança, ganhar tempo no atendimento e resolver com precisão a necessidade de cada motorista ou oficina." />
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               {diferencials.map((item, index) => (
-                <motion.article
-                  key={item}
-                  whileHover={reduceMotion ? undefined : { y: -6 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="premium-card rounded-xl p-5"
-                >
+                <motion.article key={item} whileHover={reduceMotion ? undefined : { y: -6 }} transition={{ duration: 0.25, ease: "easeOut" }} className="premium-card rounded-xl p-5">
                   <div className="mb-5 flex size-11 items-center justify-center rounded-md bg-primary/8 text-primary">
                     {index % 4 === 0 ? <Search className="size-5" /> : index % 4 === 1 ? <ShieldCheck className="size-5" /> : index % 4 === 2 ? <Droplets className="size-5" /> : <Store className="size-5" />}
                   </div>
@@ -482,9 +426,7 @@ function Index() {
               <img src={trocaDeOleoWebp.url} alt="Serviço de troca de óleo na PeçAqui" className="h-full w-full object-cover" loading="lazy" />
             </div>
             <div className="space-y-5">
-              <span className="inline-flex rounded-full bg-secondary px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-primary">
-                Troca de óleo
-              </span>
+              <span className="inline-flex rounded-full bg-secondary px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-primary">Troca de óleo</span>
               <h2 className="text-balance text-3xl font-extrabold md:text-5xl">Seu motor merece o melhor cuidado.</h2>
               <p className="text-base leading-8 text-muted-foreground md:text-lg">
                 Atendimento especializado, lubrificantes reconhecidos no mercado e execução com atenção aos detalhes para preservar o desempenho do veículo.
@@ -502,9 +444,7 @@ function Index() {
         <motion.section id="servicos" {...fadeUp} className="section-shell bg-brand-graphite py-18 text-white md:py-24">
           <div className="content-shell grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center">
             <div className="space-y-5">
-              <span className="inline-flex rounded-full border border-white/14 bg-white/8 px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-white/75">
-                Serviços e linha automotiva
-              </span>
+              <span className="inline-flex rounded-full border border-white/14 bg-white/8 px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-white/75">Serviços e linha automotiva</span>
               <h2 className="text-balance text-3xl font-extrabold md:text-5xl">Peças, acessórios e soluções para manter seu carro sempre em movimento.</h2>
               <p className="text-base leading-8 text-white/75 md:text-lg">
                 A PeçAqui atende desde a reposição do dia a dia até demandas mais específicas, unindo tradição, agilidade e marcas reconhecidas para quem precisa comprar com segurança.
@@ -530,17 +470,10 @@ function Index() {
 
         <motion.section id="marcas" {...fadeUp} className="section-shell py-18 md:py-24">
           <div className="content-shell rounded-[1.25rem] border border-border bg-background p-6 shadow-[var(--shadow-soft)] md:p-10">
-            <SectionHeading
-              eyebrow="Marcas trabalhadas"
-              title="Trabalhamos com as principais marcas do mercado"
-              description="Um portfólio amplo para atender diferentes necessidades automotivas com confiança, procedência e variedade real no ponto de venda."
-            />
+            <SectionHeading eyebrow="Marcas trabalhadas" title="Trabalhamos com as principais marcas do mercado" description="Um portfólio amplo para atender diferentes necessidades automotivas com confiança, procedência e variedade real no ponto de venda." />
             <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {brands.map((brand) => (
-                <div
-                  key={brand}
-                  className="rounded-md border border-border bg-secondary/35 px-4 py-4 text-center text-sm font-semibold uppercase tracking-[0.08em] text-muted-foreground grayscale transition duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:bg-background hover:text-foreground hover:grayscale-0"
-                >
+                <div key={brand} className="rounded-md border border-border bg-secondary/35 px-4 py-4 text-center text-sm font-semibold uppercase tracking-[0.08em] text-muted-foreground grayscale transition duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:bg-background hover:text-foreground hover:grayscale-0">
                   {brand}
                 </div>
               ))}
@@ -550,85 +483,64 @@ function Index() {
         </motion.section>
 
         <motion.section {...fadeUp} className="section-shell bg-brand-graphite py-18 text-white md:py-24">
-          <div className="content-shell grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-start">
+          <div className="content-shell grid gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center">
             <div className="space-y-5">
-              <span className="inline-flex rounded-full border border-white/14 bg-white/8 px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-white/75">
-                Nossa história
-              </span>
+              <span className="inline-flex rounded-full border border-white/14 bg-white/8 px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-white/75">Nossa história</span>
               <h2 className="text-balance text-3xl font-extrabold md:text-5xl">38 anos fazendo parte da história de São José do Rio Preto.</h2>
               <p className="max-w-2xl text-base leading-8 text-white/74 md:text-lg">
                 Ao longo das décadas, a PeçAqui construiu uma reputação baseada em atendimento próximo, conhecimento técnico e presença real no dia a dia dos motoristas da cidade.
               </p>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                {timeline.map((item) => (
-                  <div key={item.year} className="rounded-xl border border-white/10 bg-white/5 p-5">
-                    <div className="text-sm font-semibold uppercase tracking-[0.1em] text-white/60">{item.year}</div>
-                    <h3 className="mt-2 text-xl font-bold">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-7 text-white/72">{item.description}</p>
+              <div className="grid grid-cols-3 gap-3 pt-2">
+                {historyImages.map((image) => (
+                  <div key={image.src} className="overflow-hidden rounded-xl border border-white/12 bg-white/6 p-2 shadow-[var(--shadow-soft)]">
+                    <img src={image.src} alt={image.alt} loading="lazy" className="aspect-square w-full rounded-lg object-cover grayscale contrast-110 sepia-[0.15]" />
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 md:pt-10">
-              <PolaroidCard src={fachadaAbertaAntigaWebp.url} alt="Foto antiga da fachada da PeçAqui" caption="Fachada histórica" rotate="-rotate-2" />
-              <PolaroidCard src={atendimentoAntigaWebp.url} alt="Foto antiga de atendimento da PeçAqui" caption="Atendimento próximo" rotate="rotate-2" />
-              <PolaroidCard src={estoqueAntigaWebp.url} alt="Foto antiga do estoque da PeçAqui" caption="Estoque robusto" rotate="rotate-1" />
+            <div className="relative overflow-hidden rounded-[1.5rem] border border-white/18 bg-white/8 p-3 shadow-[var(--shadow-premium)] backdrop-blur-sm">
+              <div className="absolute inset-x-8 top-0 h-px bg-white/60" />
+              <img src={heroFachadaWebp.url} alt="Fachada atual colorida da PeçAqui Auto Peças" loading="lazy" className="aspect-[4/3] w-full rounded-[1.15rem] object-cover" />
+              <div className="absolute inset-x-3 bottom-3 rounded-b-[1.15rem] bg-gradient-to-t from-brand-graphite/82 to-transparent px-5 py-5">
+                <div className="text-sm font-semibold uppercase tracking-[0.12em] text-white/72">Estrutura atual</div>
+                <div className="mt-1 text-xl font-extrabold">PeçAqui Auto Peças</div>
+              </div>
             </div>
           </div>
         </motion.section>
 
         <motion.section id="loja" {...fadeUp} className="section-shell py-18 md:py-24">
           <div className="content-shell space-y-10">
-            <SectionHeading
-              eyebrow="Nossa loja"
-              title="Conheça a PeçAqui"
-              description="Fotos reais para reforçar a estrutura, o ambiente e a tradição da loja física em São José do Rio Preto."
-            />
+            <SectionHeading eyebrow="Nossa loja" title="Conheça a PeçAqui" description="Fotos atuais para reforçar a estrutura, o ambiente e a tradição da loja física em São José do Rio Preto." />
 
-            <div className="flex flex-wrap gap-3">
-              {categoryFilters.map((category) => (
-                <button
-                  key={category}
-                  type="button"
-                  onClick={() => setSelectedCategory(category)}
-                  className={`rounded-full border px-4 py-2 text-sm font-medium transition ${selectedCategory === category ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground hover:border-primary/30 hover:text-foreground"}`}
-                >
-                  {category}
-                </button>
-              ))}
+            <div className="relative overflow-hidden rounded-[1.5rem] border border-border bg-background shadow-[var(--shadow-premium)]">
+              <button type="button" onClick={() => setLightboxIndex(carouselIndex)} className="group block w-full text-left" aria-label="Abrir imagem da loja">
+                <img src={galleryImages[carouselIndex].src} alt={galleryImages[carouselIndex].alt} loading="lazy" className="aspect-[16/9] w-full object-cover transition duration-500 group-hover:scale-[1.02]" />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-graphite/88 to-transparent px-5 py-5 text-white">
+                  <div className="text-xs font-semibold uppercase tracking-[0.1em] text-white/65">Conheça nossa loja</div>
+                  <div className="mt-1 text-sm font-medium">Clique para ampliar</div>
+                </div>
+              </button>
+              <button type="button" aria-label="Imagem anterior" onClick={() => goToGalleryImage(-1)} className="absolute left-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/18 bg-white/14 text-white backdrop-blur-md transition hover:bg-white/22">
+                <ChevronLeft className="size-5" />
+              </button>
+              <button type="button" aria-label="Próxima imagem" onClick={() => goToGalleryImage(1)} className="absolute right-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/18 bg-white/14 text-white backdrop-blur-md transition hover:bg-white/22">
+                <ChevronRight className="size-5" />
+              </button>
             </div>
 
-            <div className="columns-1 gap-5 md:columns-2 xl:columns-3">
-              {filteredGallery.map((image) => {
-                const index = filteredGallery.findIndex((entry) => entry.src === image.src);
-                return (
-                  <button
-                    key={image.src}
-                    type="button"
-                    onClick={() => setLightboxIndex(index)}
-                    className="group relative mb-5 block w-full overflow-hidden rounded-xl border border-border bg-background text-left shadow-[var(--shadow-soft)]"
-                  >
-                    <img src={image.src} alt={image.alt} loading="lazy" className="h-auto w-full object-cover transition duration-300 group-hover:scale-[1.02]" />
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-graphite/88 to-transparent px-4 py-4 text-white">
-                      <div className="text-xs font-semibold uppercase tracking-[0.08em] text-white/70">{image.category}</div>
-                      <div className="mt-1 text-sm font-medium">Abrir imagem</div>
-                    </div>
-                  </button>
-                );
-              })}
+            <div className="flex justify-center gap-2">
+              {galleryImages.map((image, index) => (
+                <button key={image.src} type="button" aria-label={`Ir para imagem ${index + 1}`} onClick={() => setCarouselIndex(index)} className={`h-2.5 rounded-full transition-all ${carouselIndex === index ? "w-8 bg-primary" : "w-2.5 bg-muted-foreground/30 hover:bg-muted-foreground/50"}`} />
+              ))}
             </div>
           </div>
         </motion.section>
 
         <motion.section {...fadeUp} className="section-shell bg-surface-alt py-18 md:py-24">
           <div className="content-shell space-y-10">
-            <SectionHeading
-              eyebrow="Depoimentos"
-              title="Quem compra, recomenda."
-              description="Bloco pronto para futura integração com avaliações do Google, já estruturado para reforçar confiança e prova social local."
-            />
+            <SectionHeading eyebrow="Depoimentos" title="Quem compra, recomenda." description="Avaliações reais de clientes que reforçam atendimento, preço, variedade e agilidade." />
             <div className="grid gap-4 lg:grid-cols-3">
               {testimonials.map((testimonial) => (
                 <article key={testimonial.name} className="premium-card rounded-xl p-6">
@@ -654,13 +566,7 @@ function Index() {
         <motion.section id="contato" {...fadeUp} className="section-shell py-18 md:py-24">
           <div className="content-shell grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_24rem] lg:items-stretch">
             <div className="overflow-hidden rounded-2xl border border-border shadow-[var(--shadow-soft)]">
-              <iframe
-                title="Mapa da PeçAqui Auto Peças"
-                src="https://www.google.com/maps?q=Av.%20Potirendaba,%202110%20-%20Jardim%20Santa%20Luzia,%20S%C3%A3o%20Jos%C3%A9%20do%20Rio%20Preto%20-%20SP&z=16&output=embed"
-                className="h-[420px] w-full"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
+              <iframe title="Mapa da PeçAqui Auto Peças" src="https://www.google.com/maps?q=Av.%20Potirendaba,%202110%20-%20Jardim%20Santa%20Luzia,%20S%C3%A3o%20Jos%C3%A9%20do%20Rio%20Preto%20-%20SP&z=16&output=embed" className="h-[420px] w-full" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
             </div>
 
             <aside className="premium-card flex flex-col rounded-2xl p-6 md:p-8">
@@ -717,22 +623,16 @@ function Index() {
         <div className="content-shell space-y-10">
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.8fr_0.8fr_0.9fr]">
             <div className="space-y-4">
-              <img src={logoPecaqui.url} alt="Logo da PeçAqui Auto Peças" className="h-auto w-52" loading="lazy" />
+              <div className="inline-flex rounded-2xl border border-white/20 bg-white/86 p-3 shadow-[0_20px_60px_-35px_rgba(255,255,255,0.8)] backdrop-blur-sm">
+                <img src={logoPecaqui.url} alt="Logo da PeçAqui Auto Peças" className="h-auto w-52" loading="lazy" />
+              </div>
               <p className="max-w-sm text-sm leading-7 text-white/68">
                 Tradição, variedade e atendimento especializado para autopeças, acessórios, lubrificantes e troca de óleo em São José do Rio Preto.
               </p>
+              <p className="text-sm font-medium text-white/72">CNPJ: 59.382.945/0001-68</p>
             </div>
 
-            <FooterColumn
-              title="Menu"
-              items={[
-                { label: "Home", href: "#home" },
-                { label: "Empresa", href: "#empresa" },
-                { label: "Serviços", href: "#servicos" },
-                { label: "Troca de Óleo", href: "#troca-de-oleo" },
-                { label: "Contato", href: "#contato" },
-              ]}
-            />
+            <FooterColumn title="Menu" items={menuItems.map(([label, href]) => ({ label, href }))} />
 
             <FooterColumn
               title="Contato"
@@ -759,7 +659,7 @@ function Index() {
             <p>© 2026 PeçAqui Auto Peças. Todos os direitos reservados.</p>
             <p>
               Desenvolvido por{" "}
-              <a href="https://mundodigitalsolucoes.com.br" target="_blank" rel="noreferrer" className="font-semibold text-white transition hover:text-accent">
+              <a href={MDS_URL} target="_blank" rel="noreferrer" className="font-semibold text-white transition hover:text-accent">
                 Mundo Digital Soluções
               </a>
             </p>
@@ -767,64 +667,33 @@ function Index() {
         </div>
       </footer>
 
-      <a
-        href={floatingWhatsAppHref}
-        target="_blank"
-        rel="noreferrer"
-        aria-label="Chamar no WhatsApp"
-        className="fixed right-5 bottom-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-[var(--shadow-premium)] transition duration-300 hover:-translate-y-1"
-      >
+      <a href={floatingWhatsAppHref} target="_blank" rel="noreferrer" aria-label="Chamar no WhatsApp" className="fixed right-5 bottom-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-[var(--shadow-premium)] transition duration-300 hover:-translate-y-1">
         <MessageCircle className="size-6" />
       </a>
 
       <AnimatePresence>
         {lightboxIndex !== null ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-[70] flex items-center justify-center bg-brand-graphite/92 p-4 backdrop-blur-sm"
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }} className="fixed inset-0 z-[70] flex items-center justify-center bg-brand-graphite/92 p-4 backdrop-blur-sm">
             <button type="button" className="absolute inset-0" aria-label="Fechar galeria" onClick={() => setLightboxIndex(null)} />
             <div className="relative z-10 flex w-full max-w-6xl items-center gap-4">
-              <button
-                type="button"
-                aria-label="Imagem anterior"
-                onClick={() => setLightboxIndex((current) => (current === null ? 0 : (current - 1 + filteredGallery.length) % filteredGallery.length))}
-                className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/14 bg-white/10 text-white md:flex"
-              >
+              <button type="button" aria-label="Imagem anterior" onClick={() => setLightboxIndex((current) => (current === null ? 0 : (current - 1 + galleryImages.length) % galleryImages.length))} className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/14 bg-white/10 text-white md:flex">
                 <ChevronLeft className="size-5" />
               </button>
 
               <div className="mx-auto w-full overflow-hidden rounded-2xl border border-white/12 bg-white/6 p-3 shadow-[var(--shadow-premium)]">
-                <img
-                  src={filteredGallery[lightboxIndex].src}
-                  alt={filteredGallery[lightboxIndex].alt}
-                  className="max-h-[82vh] w-full rounded-xl object-contain"
-                />
+                <img src={galleryImages[lightboxIndex].src} alt={galleryImages[lightboxIndex].alt} className="max-h-[82vh] w-full rounded-xl object-contain" />
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-2 pt-4 text-white">
                   <div className="min-w-0">
-                    <div className="text-xs font-semibold uppercase tracking-[0.1em] text-white/60">{filteredGallery[lightboxIndex].category}</div>
-                    <div className="mt-1 text-sm text-white/78">{filteredGallery[lightboxIndex].alt}</div>
+                    <div className="text-xs font-semibold uppercase tracking-[0.1em] text-white/60">Conheça nossa loja</div>
+                    <div className="mt-1 text-sm text-white/78">{galleryImages[lightboxIndex].alt}</div>
                   </div>
-                  <button
-                    type="button"
-                    aria-label="Fechar"
-                    onClick={() => setLightboxIndex(null)}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/14 bg-white/10 text-white"
-                  >
+                  <button type="button" aria-label="Fechar" onClick={() => setLightboxIndex(null)} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/14 bg-white/10 text-white">
                     <X className="size-4" />
                   </button>
                 </div>
               </div>
 
-              <button
-                type="button"
-                aria-label="Próxima imagem"
-                onClick={() => setLightboxIndex((current) => (current === null ? 0 : (current + 1) % filteredGallery.length))}
-                className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/14 bg-white/10 text-white md:flex"
-              >
+              <button type="button" aria-label="Próxima imagem" onClick={() => setLightboxIndex((current) => (current === null ? 0 : (current + 1) % galleryImages.length))} className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/14 bg-white/10 text-white md:flex">
                 <ChevronRight className="size-5" />
               </button>
             </div>
@@ -840,18 +709,12 @@ function SiteHeader({ mobileMenuOpen, onToggleMenu, solid }: { mobileMenuOpen: b
     <header className="fixed inset-x-0 top-0 z-50 section-shell pt-4">
       <div className={`content-shell transition-all duration-300 ${solid ? "glass-panel rounded-2xl px-4 py-3 text-foreground" : "px-1 py-3 text-white"}`}>
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 lg:flex lg:items-center lg:justify-between">
-          <a href="#home" className="flex min-w-0 items-center gap-3">
+          <a href="#home" className="inline-flex min-w-0 items-center gap-3 rounded-2xl border border-white/30 bg-white/84 px-3 py-2 shadow-[0_16px_50px_-32px_rgba(255,255,255,0.9)] backdrop-blur-md">
             <img src={logoPecaqui.url} alt="PeçAqui Auto Peças" className="h-11 w-auto shrink-0 md:h-12" />
           </a>
 
           <nav className="hidden items-center gap-6 lg:flex">
-            {[
-              ["Home", "#home"],
-              ["Empresa", "#empresa"],
-              ["Serviços", "#servicos"],
-              ["Troca de Óleo", "#troca-de-oleo"],
-              ["Contato", "#contato"],
-            ].map(([label, href]) => (
+            {menuItems.map(([label, href]) => (
               <a key={label} href={href} className={`text-sm font-medium transition ${solid ? "text-foreground/80 hover:text-foreground" : "text-white/85 hover:text-white"}`}>
                 {label}
               </a>
@@ -862,12 +725,7 @@ function SiteHeader({ mobileMenuOpen, onToggleMenu, solid }: { mobileMenuOpen: b
             <Button asChild variant="hero" size="lg" className="hidden lg:inline-flex">
               <a href="#orcamento">Solicitar Orçamento</a>
             </Button>
-            <button
-              type="button"
-              aria-label="Abrir menu"
-              onClick={onToggleMenu}
-              className={`inline-flex h-11 w-11 items-center justify-center rounded-md border transition lg:hidden ${solid ? "border-border bg-background text-foreground" : "border-white/20 bg-white/10 text-white backdrop-blur-sm"}`}
-            >
+            <button type="button" aria-label="Abrir menu" onClick={onToggleMenu} className={`inline-flex h-11 w-11 items-center justify-center rounded-md border transition lg:hidden ${solid ? "border-border bg-background text-foreground" : "border-white/20 bg-white/10 text-white backdrop-blur-sm"}`}>
               <Menu className="size-5" />
             </button>
           </div>
@@ -877,13 +735,7 @@ function SiteHeader({ mobileMenuOpen, onToggleMenu, solid }: { mobileMenuOpen: b
           {mobileMenuOpen ? (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden lg:hidden">
               <div className="mt-4 grid gap-3 border-t border-border/70 pt-4">
-                {[
-                  ["Home", "#home"],
-                  ["Empresa", "#empresa"],
-                  ["Serviços", "#servicos"],
-                  ["Troca de Óleo", "#troca-de-oleo"],
-                  ["Contato", "#contato"],
-                ].map(([label, href]) => (
+                {menuItems.map(([label, href]) => (
                   <a key={label} href={href} className="text-sm font-medium text-foreground/85" onClick={onToggleMenu}>
                     {label}
                   </a>
@@ -923,21 +775,12 @@ function QuickMetric({ value, label }: { value: string; label: string }) {
   );
 }
 
-function FormField({ label, children }: { label: string; children: React.ReactNode }) {
+function FormField({ label, children }: { label: string; children: ReactNode }) {
   return (
     <label className="grid gap-2 text-sm font-medium text-foreground">
       <span>{label}</span>
       {children}
     </label>
-  );
-}
-
-function PolaroidCard({ src, alt, caption, rotate }: { src: string; alt: string; caption: string; rotate: string }) {
-  return (
-    <div className={`rounded-md bg-white p-3 text-brand-graphite shadow-[var(--shadow-soft)] ${rotate}`}>
-      <img src={src} alt={alt} loading="lazy" className="aspect-[4/3] w-full rounded-sm object-cover" />
-      <div className="px-1 pt-3 pb-2 text-sm font-semibold">{caption}</div>
-    </div>
   );
 }
 
