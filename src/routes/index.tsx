@@ -27,12 +27,13 @@ import { Button } from "@/components/ui/button";
 
 const images = {
   logo: "/images/logo-pecaqui.png",
-  hero: "/images/hero-fachada.jpg",
+  hero: "/images/hero-fachada.png",
   trocaOleo: "/images/troca-de-oleo.jpg",
   interna: "/images/foto-interna.jpg",
-  atendimentoAntiga: "/images/atendimento-antiga.jpg",
-  estoqueAntiga: "/images/estoque-antiga.jpg",
-  fachadaAntiga: "/images/fachada-aberta-antiga.jpg",
+  atendimentoAntiga: "/images/atendimento-antiga.png",
+  estoqueAntiga: "/images/estoque-antiga.png",
+  fachadaAntiga: "/images/fachada-aberta-antiga.png",
+  selo: "/images/selo-de-confiança.png",
 };
 
 const WHATSAPP_NUMBER = "+5517992822597";
@@ -318,22 +319,19 @@ function Index() {
                 </div>
               </motion.div>
 
-              <motion.aside
+              <motion.div
                 {...fadeUp}
-                animate={reduceMotion ? undefined : { y: [0, -10, 0] }}
-                transition={reduceMotion ? { duration: 0.3, ease: "easeOut" } : { duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
-                className="relative mx-auto flex h-80 w-full max-w-[20rem] items-center justify-center overflow-hidden rounded-[2rem] border border-white/35 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(180,190,205,0.55)_45%,rgba(255,255,255,0.82))] p-6 text-center text-brand-graphite shadow-[0_28px_80px_-36px_rgba(15,23,42,0.8)] backdrop-blur-md [clip-path:polygon(50%_0%,88%_12%,100%_42%,86%_86%,50%_100%,14%_86%,0%_42%,12%_12%)]"
+                animate={reduceMotion ? undefined : { y: [0, -4, 0] }}
+                transition={reduceMotion ? { duration: 0.3, ease: "easeOut" } : { duration: 4.6, repeat: Infinity, ease: "easeInOut" }}
+                className="mx-auto flex w-full justify-center overflow-visible lg:justify-end"
               >
-                <div className="absolute inset-3 rounded-[1.6rem] border border-white/60 [clip-path:polygon(50%_0%,88%_12%,100%_42%,86%_86%,50%_100%,14%_86%,0%_42%,12%_12%)]" />
-                <div className="absolute -left-16 top-0 h-full w-24 rotate-12 bg-white/35 blur-md" />
-                <div className="absolute inset-x-10 top-8 h-px bg-white/80" />
-                <div className="relative z-10 space-y-2 drop-shadow-sm">
-                  <div className="text-7xl font-black leading-none tracking-[-0.06em]">38</div>
-                  <div className="text-2xl font-extrabold uppercase tracking-[0.18em] text-brand-blue">Anos</div>
-                  <div className="mx-auto mt-3 h-px w-28 bg-brand-red/70" />
-                  <div className="pt-2 text-base font-black uppercase tracking-[0.18em] text-brand-graphite">de confiança</div>
-                </div>
-              </motion.aside>
+                <img
+                  src={images.selo}
+                  alt="Selo 38 anos de confiança da PeçAqui Auto Peças"
+                  className="h-auto w-[180px] max-w-full object-contain drop-shadow-[0_18px_34px_rgba(0,0,0,0.34)] md:w-[240px] lg:w-[280px]"
+                  loading="eager"
+                />
+              </motion.div>
             </div>
           </div>
         </section>
