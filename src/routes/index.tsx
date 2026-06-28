@@ -4,7 +4,6 @@ import {
   ArrowRight,
   Award,
   CalendarClock,
-  Check,
   ChevronLeft,
   ChevronRight,
   Clock3,
@@ -22,16 +21,19 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 
-import atendimentoAntigaWebp from "@/assets/atendimento-antiga.webp.asset.json";
-import estoqueAntigaWebp from "@/assets/estoque-antiga.webp.asset.json";
-import fachadaAbertaAntigaWebp from "@/assets/fachada-aberta-antiga.webp.asset.json";
-import fotoInternaWebp from "@/assets/foto-interna.webp.asset.json";
-import heroFachadaWebp from "@/assets/hero-fachada.webp.asset.json";
-import logoPecaqui from "@/assets/logo-pecaqui.png.asset.json";
-import trocaDeOleoWebp from "@/assets/troca-de-oleo.webp.asset.json";
 import { Button } from "@/components/ui/button";
+
+const images = {
+  logo: "/images/logo-pecaqui.png",
+  hero: "/images/hero-fachada.jpg",
+  trocaOleo: "/images/troca-de-oleo.jpg",
+  interna: "/images/foto-interna.jpg",
+  atendimentoAntiga: "/images/atendimento-antiga.jpg",
+  estoqueAntiga: "/images/estoque-antiga.jpg",
+  fachadaAntiga: "/images/fachada-aberta-antiga.jpg",
+};
 
 const WHATSAPP_NUMBER = "+5517992822597";
 const WHATSAPP_BASE_MESSAGE = "Olá! Gostaria de solicitar um orçamento de peças para o meu veículo.";
@@ -142,15 +144,15 @@ const testimonials = [
 ] as const;
 
 const historyImages = [
-  { src: fachadaAbertaAntigaWebp.url, alt: "Foto antiga da fachada da PeçAqui Auto Peças" },
-  { src: atendimentoAntigaWebp.url, alt: "Foto antiga do atendimento da PeçAqui Auto Peças" },
-  { src: estoqueAntigaWebp.url, alt: "Foto antiga do estoque da PeçAqui Auto Peças" },
+  { src: images.fachadaAntiga, alt: "Foto antiga da fachada da PeçAqui Auto Peças" },
+  { src: images.atendimentoAntiga, alt: "Foto antiga do atendimento da PeçAqui Auto Peças" },
+  { src: images.estoqueAntiga, alt: "Foto antiga do estoque da PeçAqui Auto Peças" },
 ] as const;
 
 const galleryImages = [
-  { src: heroFachadaWebp.url, alt: "Fachada atual da PeçAqui Auto Peças em São José do Rio Preto" },
-  { src: fotoInternaWebp.url, alt: "Ambiente interno atual da PeçAqui Auto Peças" },
-  { src: trocaDeOleoWebp.url, alt: "Serviço atual de troca de óleo na PeçAqui Auto Peças" },
+  { src: images.hero, alt: "Fachada atual da PeçAqui Auto Peças em São José do Rio Preto" },
+  { src: images.interna, alt: "Ambiente interno atual da PeçAqui Auto Peças" },
+  { src: images.trocaOleo, alt: "Serviço atual de troca de óleo na PeçAqui Auto Peças" },
 ] as const;
 
 const businessSchema = {
@@ -160,7 +162,7 @@ const businessSchema = {
       "@type": ["LocalBusiness", "AutoPartsStore", "AutomotiveBusiness"],
       "@id": "/#business",
       name: "PeçAqui Auto Peças",
-      image: heroFachadaWebp.url,
+      image: images.hero,
       url: "/",
       telephone: "+55 17 3227-8323",
       priceRange: "$$",
@@ -227,10 +229,10 @@ export const Route = createFileRoute("/")({
         content: "Há 38 anos oferecendo autopeças, acessórios, lubrificantes e troca de óleo com atendimento especializado em São José do Rio Preto.",
       },
       { property: "og:url", content: "/" },
-      { property: "og:image", content: heroFachadaWebp.url },
-      { name: "twitter:image", content: heroFachadaWebp.url },
+      { property: "og:image", content: images.hero },
+      { name: "twitter:image", content: images.hero },
     ],
-    links: [{ rel: "canonical", href: "/" }, { rel: "preload", as: "image", href: heroFachadaWebp.url, fetchPriority: "high" }],
+    links: [{ rel: "canonical", href: "/" }, { rel: "preload", as: "image", href: images.hero, fetchPriority: "high" }],
     scripts: [
       {
         type: "application/ld+json",
@@ -276,7 +278,7 @@ function Index() {
 
       <main>
         <section id="home" className="relative isolate overflow-hidden bg-brand-graphite text-white">
-          <img src={heroFachadaWebp.url} alt="Fachada da PeçAqui Auto Peças" className="absolute inset-0 h-full w-full object-cover" fetchPriority="high" />
+          <img src={images.hero} alt="Fachada da PeçAqui Auto Peças" className="absolute inset-0 h-full w-full object-cover" fetchPriority="high" />
           <div className="absolute inset-0 bg-hero-overlay" />
           <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-brand-graphite/75 to-transparent" />
 
@@ -329,9 +331,7 @@ function Index() {
                   <div className="text-7xl font-black leading-none tracking-[-0.06em]">38</div>
                   <div className="text-2xl font-extrabold uppercase tracking-[0.18em] text-brand-blue">Anos</div>
                   <div className="mx-auto mt-3 h-px w-28 bg-brand-red/70" />
-                  <div className="pt-2 text-base font-black uppercase tracking-[0.18em] text-brand-graphite">
-                    de confiança
-                  </div>
+                  <div className="pt-2 text-base font-black uppercase tracking-[0.18em] text-brand-graphite">de confiança</div>
                 </div>
               </motion.aside>
             </div>
@@ -423,7 +423,7 @@ function Index() {
         <motion.section id="troca-de-oleo" {...fadeUp} className="section-shell py-18 md:py-24">
           <div className="content-shell grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center">
             <div className="overflow-hidden rounded-2xl border border-border shadow-[var(--shadow-soft)]">
-              <img src={trocaDeOleoWebp.url} alt="Serviço de troca de óleo na PeçAqui" className="h-full w-full object-cover" loading="lazy" />
+              <img src={images.trocaOleo} alt="Serviço de troca de óleo na PeçAqui" className="h-full w-full object-cover" loading="lazy" />
             </div>
             <div className="space-y-5">
               <span className="inline-flex rounded-full bg-secondary px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-primary">Troca de óleo</span>
@@ -501,7 +501,7 @@ function Index() {
 
             <div className="relative overflow-hidden rounded-[1.5rem] border border-white/18 bg-white/8 p-3 shadow-[var(--shadow-premium)] backdrop-blur-sm">
               <div className="absolute inset-x-8 top-0 h-px bg-white/60" />
-              <img src={heroFachadaWebp.url} alt="Fachada atual colorida da PeçAqui Auto Peças" loading="lazy" className="aspect-[4/3] w-full rounded-[1.15rem] object-cover" />
+              <img src={images.hero} alt="Fachada atual colorida da PeçAqui Auto Peças" loading="lazy" className="aspect-[4/3] w-full rounded-[1.15rem] object-cover" />
               <div className="absolute inset-x-3 bottom-3 rounded-b-[1.15rem] bg-gradient-to-t from-brand-graphite/82 to-transparent px-5 py-5">
                 <div className="text-sm font-semibold uppercase tracking-[0.12em] text-white/72">Estrutura atual</div>
                 <div className="mt-1 text-xl font-extrabold">PeçAqui Auto Peças</div>
@@ -624,7 +624,7 @@ function Index() {
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.8fr_0.8fr_0.9fr]">
             <div className="space-y-4">
               <div className="inline-flex rounded-2xl border border-white/20 bg-white/86 p-3 shadow-[0_20px_60px_-35px_rgba(255,255,255,0.8)] backdrop-blur-sm">
-                <img src={logoPecaqui.url} alt="Logo da PeçAqui Auto Peças" className="h-auto w-52" loading="lazy" />
+                <img src={images.logo} alt="Logo da PeçAqui Auto Peças" className="h-auto w-52" loading="lazy" />
               </div>
               <p className="max-w-sm text-sm leading-7 text-white/68">
                 Tradição, variedade e atendimento especializado para autopeças, acessórios, lubrificantes e troca de óleo em São José do Rio Preto.
@@ -710,7 +710,7 @@ function SiteHeader({ mobileMenuOpen, onToggleMenu, solid }: { mobileMenuOpen: b
       <div className={`content-shell transition-all duration-300 ${solid ? "glass-panel rounded-2xl px-4 py-3 text-foreground" : "px-1 py-3 text-white"}`}>
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 lg:flex lg:items-center lg:justify-between">
           <a href="#home" className="inline-flex min-w-0 items-center gap-3 rounded-2xl border border-white/30 bg-white/84 px-3 py-2 shadow-[0_16px_50px_-32px_rgba(255,255,255,0.9)] backdrop-blur-md">
-            <img src={logoPecaqui.url} alt="PeçAqui Auto Peças" className="h-11 w-auto shrink-0 md:h-12" />
+            <img src={images.logo} alt="PeçAqui Auto Peças" className="h-11 w-auto shrink-0 md:h-12" />
           </a>
 
           <nav className="hidden items-center gap-6 lg:flex">
@@ -784,7 +784,7 @@ function FormField({ label, children }: { label: string; children: ReactNode }) 
   );
 }
 
-function ContactRow({ icon: Icon, label, value }: { icon: typeof MapPin; label: string; value: string }) {
+function ContactRow({ icon: Icon, label, value }: { icon: ComponentType<{ className?: string }>; label: string; value: string }) {
   return (
     <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3">
       <div className="flex size-10 items-center justify-center rounded-md bg-primary/8 text-primary">
