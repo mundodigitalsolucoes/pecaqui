@@ -277,8 +277,7 @@ function Index() {
                 <FormField label="Placa (opcional)"><input value={formState.plate} onChange={(e) => setFormState((s) => ({ ...s, plate: e.target.value }))} placeholder="Ex.: ABC1D23" className="h-12 w-full rounded-md border border-input bg-background px-4 text-sm uppercase outline-none transition focus:border-primary focus:ring-2 focus:ring-ring" /></FormField>
                 <FormField label="Descrição da peça ou serviço"><input required value={formState.part} onChange={(e) => setFormState((s) => ({ ...s, part: e.target.value }))} placeholder="Ex.: pastilha de freio dianteira" className="h-12 w-full rounded-md border border-input bg-background px-4 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-ring" /></FormField>
               </div>
-              <p className="mt-5 text-center text-base leading-7 text-muted-foreground">Preencha os dados do seu veículo e coloque a peça desejada, que nossa equipe retorna com orçamento.</p>
-              {formError ? <p className="mt-3 rounded-md bg-destructive/10 px-4 py-3 text-center text-sm font-medium text-destructive">{formError}</p> : null}
+                            {formError ? <p className="mt-3 rounded-md bg-destructive/10 px-4 py-3 text-center text-sm font-medium text-destructive">{formError}</p> : null}
               <Button type="submit" variant="hero" size="hero" className="mt-5 w-full">Solicitar orçamento<ArrowRight className="size-4" /></Button>
             </form>
           </div>
