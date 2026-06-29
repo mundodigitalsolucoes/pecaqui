@@ -227,3 +227,75 @@
 @utility text-balance {
   text-wrap: balance;
 }
+
+@keyframes pecaqui-seal-float {
+  from {
+    transform: translateY(3px);
+  }
+
+  to {
+    transform: translateY(-3px);
+  }
+}
+
+#home div:has(> img[alt="Selo 38 anos de confiança da PeçAqui Auto Peças"]) {
+  position: relative;
+  opacity: 1 !important;
+  overflow: visible;
+  animation: pecaqui-seal-float 5s ease-in-out infinite alternate;
+}
+
+#home div:has(> img[alt="Selo 38 anos de confiança da PeçAqui Auto Peças"])::before {
+  content: "";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  z-index: -1;
+  width: clamp(13rem, 24vw, 20rem);
+  height: clamp(13rem, 24vw, 20rem);
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 255, 245, 0.92) 0%, rgba(255, 244, 210, 0.52) 42%, rgba(255, 255, 255, 0) 72%);
+  filter: blur(60px);
+  opacity: 0.42;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+#home img[alt="Selo 38 anos de confiança da PeçAqui Auto Peças"] {
+  opacity: 1 !important;
+  filter: drop-shadow(0 12px 28px rgba(255, 255, 255, 0.35));
+}
+
+#orcamento form.premium-card {
+  min-height: 30rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: center;
+  padding: 2rem;
+}
+
+@media (width >= 48rem) {
+  #orcamento form.premium-card {
+    padding: 2.5rem;
+  }
+}
+
+#orcamento form.premium-card > div {
+  order: 0;
+}
+
+#orcamento form.premium-card::after {
+  content: "Preencha os dados do seu veículo e coloque a peça desejada, que nossa equipe retorna com orçamento.";
+  order: 1;
+  margin-top: 20px;
+  margin-bottom: 18px;
+  color: #64748b;
+  font-size: 16px;
+  line-height: 1.65;
+  text-align: center;
+}
+
+#orcamento form.premium-card > button[type="submit"] {
+  order: 2;
+  margin-top: 0;
+}
